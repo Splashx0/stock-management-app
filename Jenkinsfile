@@ -31,7 +31,6 @@ pipeline {
         stage('SonarQube Analysis - Backend') {
             steps {
                 script {
-                    dir('backend') {
                         sh '''
                             sonar-scanner \
                               -Dsonar.projectKey=stock-management-backend \
@@ -39,7 +38,7 @@ pipeline {
                               -Dsonar.login=${SONARQUBE_TOKEN} \
                               -Dsonar.sources=src
                         '''
-                    }
+                    
                 }
             }
         }
@@ -47,7 +46,6 @@ pipeline {
         stage('SonarQube Analysis - Frontend') {
             steps {
                 script {
-                    dir('frontend') {
                         sh '''
                             sonar-scanner \
                               -Dsonar.projectKey=stock-management-frontend \
@@ -55,7 +53,7 @@ pipeline {
                               -Dsonar.login=${SONARQUBE_TOKEN} \
                               -Dsonar.sources=src
                         '''
-                    }
+                    
                 }
             }
         }
