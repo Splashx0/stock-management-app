@@ -11,7 +11,6 @@ pipeline {
         DOCKERHUB_PASSWORD = credentials('dockerhub-password')
         SONARQUBE_URL = credentials('sonarqube-url')
         SONARQUBE_TOKEN = credentials('sonarqube-token')
-        ALERT_EMAIL = credentials('alert-email')
         
         // Computed variables
         BACKEND_IMAGE = "${DOCKERHUB_USERNAME}/stock-backend:${BUILD_NUMBER}"
