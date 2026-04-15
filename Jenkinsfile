@@ -7,7 +7,7 @@ pipeline {
 
     tools {
         nodejs "nodejs"
-        SonarQube Scanner "sonar-scanner"
+        sonarScanner "sonar-scanner"
 
     }
 
