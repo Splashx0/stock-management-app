@@ -4,6 +4,12 @@ pipeline {
     triggers {
         githubPush()
     }
+    
+    tools {
+        sonarScanner 'sonar-scanner'
+    }
+
+    }
 
     environment {
         // Load secrets from Jenkins credentials (Docker Hub)
