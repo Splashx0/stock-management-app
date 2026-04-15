@@ -5,11 +5,6 @@ pipeline {
         githubPush()
     }
 
-    tools {
-        sonarScanner 'sonar-scanner'
-    }
-
-
     environment {
         // Load secrets from Jenkins credentials (Docker Hub)
         DOCKERHUB_USERNAME = credentials('dockerhub-username')
