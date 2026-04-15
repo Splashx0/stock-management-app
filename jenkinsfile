@@ -155,7 +155,7 @@ pipeline {
         }
     }
 
-    post {
+    /*post {
         always {
             cleanWs()
         }
@@ -173,5 +173,5 @@ pipeline {
                 to: "${ALERT_EMAIL}"
             )
         }
-    }
+    }*/
 }
