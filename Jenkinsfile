@@ -6,9 +6,10 @@ pipeline {
     }
 
     tools {
-        sonarRunner 'sonar-scanner'
-    }
+        nodejs "nodejs"
+        SonarQube Scanner "sonar-scanner"
 
+    }
 
     environment {
         // Load secrets from Jenkins credentials (Docker Hub)
