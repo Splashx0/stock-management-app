@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  email     String   @unique
+  firstName String?
+  lastName  String?
+  isStaff   Boolean  @default(false)
+  isAdmin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Customer {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  firstName String?
+  lastName  String?
+  address   String?
+  phone     String
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id         Int           @id @default(autoincrement())
+  name       String
+  price      Int
+  reference  String
+  category   Category?     @relation(fields: [categoryId], references: [id])
+  categoryId Int?
+  quantity   Int           @default(20)
+  status     ProductStatus @default(IN_STOCK)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  OrderItem  OrderItem[]
+}
+
+model Order {
+  id         Int         @id @default(autoincrement())
+  customer   Customer?   @relation(fields: [customerId], references: [id])
+  customerId Int?
+  orderItems OrderItem[]
+  status     OrderStatus @default(PENDING)
+  priceTotal Float
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   Int
+  quantity  Int      @default(1)
+  unitPrice Float
+  createdAt DateTime @default(now())
+
+  @@unique([productId, orderId])
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Driver {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  phone     String?
+  address   String?
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum ProductStatus {
+  IN_STOCK
+  LOW_STOCK
+  OUT_OF_STOCK
+}
+
+enum OrderStatus {
+  PENDING
+  DELIVERED
+  CANCELLED
+}
