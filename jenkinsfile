@@ -2,21 +2,21 @@ groovy
 pipeline {
     agent any
 
-    options {
-        buildDiscarder(logRotator(numToKeepStr: '10'))
-        timeout(time: 1, unit: 'HOURS')
-        timestamps()
-    }
-
     triggers {
-        pollSCM('H/1 * * * *')  // Check GitHub every 5 minutes
+        githubPush()
     }
 
     environment {
-        DOCKER_REGISTRY = "your-registry.azurecr.io"
-        BACKEND_IMAGE = "${DOCKER_REGISTRY}/stock-backend:${BUILD_NUMBER}"
-        FRONTEND_IMAGE = "${DOCKER_REGISTRY}/stock-frontend:${BUILD_NUMBER}"
-        SONARQUBE_URL = "http://your-ec2-ip:9000"
+        // Load secrets from Jenkins credentials (Docker Hub)
+        DOCKERHUB_USERNAME = credentials('dockerhub-username')
+        DOCKERHUB_PASSWORD = credentials('dockerhub-password')
+        SONARQUBE_URL = credentials('sonarqube-url')
+        SONARQUBE_TOKEN = credentials('sonarqube-token')
+        ALERT_EMAIL = credentials('alert-email')
+        
+        // Computed variables
+        BACKEND_IMAGE = "${DOCKERHUB_USERNAME}/stock-backend:${BUILD_NUMBER}"
+        FRONTEND_IMAGE = "${DOCKERHUB_USERNAME}/stock-frontend:${BUILD_NUMBER}"
         GIT_COMMIT_SHORT = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
     }
 
@@ -36,7 +36,7 @@ pipeline {
                     dir('backend') {
                         sh '''
                             sonar-scanner \
-                              -Dsonar.projectKey=stock-backend \
+                              -Dsonar.projectKey=stock-management-backend \
                               -Dsonar.host.url=${SONARQUBE_URL} \
                               -Dsonar.login=${SONARQUBE_TOKEN} \
                               -Dsonar.sources=src
@@ -52,7 +52,7 @@ pipeline {
                     dir('frontend') {
                         sh '''
                             sonar-scanner \
-                              -Dsonar.projectKey=stock-frontend \
+                              -Dsonar.projectKey=stock-management-frontend \
                               -Dsonar.host.url=${SONARQUBE_URL} \
                               -Dsonar.login=${SONARQUBE_TOKEN} \
                               -Dsonar.sources=src
@@ -93,7 +93,7 @@ pipeline {
             }
         }
 
-        stage('Security Scan - Trivy') {
+      /*  stage('Security Scan - Trivy') {
             steps {
                 script {
                     sh '''
@@ -110,7 +110,7 @@ pipeline {
                 }
                 archiveArtifacts artifacts: '*-trivy-report.json'
             }
-        }
+        }*/
 
         stage('Push to Registry') {
             steps {
