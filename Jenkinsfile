@@ -103,20 +103,33 @@ pipeline {
             steps {
                 script {
                     sh '''
+                        mkdir -p trivy-reports
+                        
                         echo "Scanning Backend image for vulnerabilities..."
-                        trivy image --severity HIGH,CRITICAL \
+                        docker run --rm \
+                          -v /var/run/docker.sock:/var/run/docker.sock \
+                          -v $(pwd)/trivy-reports:/reports \
+                          aquasec/trivy:0.69.3 image \
+                          --severity HIGH,CRITICAL \
                           --format json \
-                          --output backend-trivy-report.json \
+                          --output /reports/backend-trivy-$(date +%Y%m%d-%H%M%S).json \
                           ${BACKEND_IMAGE}
 
                         echo "Scanning Frontend image for vulnerabilities..."
-                        trivy image --severity HIGH,CRITICAL \
+                        docker run --rm \
+                          -v /var/run/docker.sock:/var/run/docker.sock \
+                          -v $(pwd)/trivy-reports:/reports \
+                          aquasec/trivy:0.69.3 image \
+                          --severity HIGH,CRITICAL \
                           --format json \
-                          --output frontend-trivy-report.json \
+                          --output /reports/frontend-trivy-$(date +%Y%m%d-%H%M%S).json \
                           ${FRONTEND_IMAGE}
+                        
+                        echo "Trivy scan reports saved to trivy-reports/"
+                        ls -lh trivy-reports/
                     '''
                 }
-                archiveArtifacts artifacts: '*-trivy-report.json'
+                archiveArtifacts artifacts: 'trivy-reports/*.json'
             }
         }
 
