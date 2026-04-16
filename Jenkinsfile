@@ -65,7 +65,7 @@ pipeline {
             }
         }
 
-        stage('Build Backend') {
+        /*stage('Build Backend') {
             steps {
                 script {
                     dir('backend') {
@@ -86,7 +86,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
 
         stage('Build Docker Images') {
             steps {
@@ -153,7 +153,7 @@ pipeline {
                     sh '''
                         docker pull ${BACKEND_IMAGE}
                         docker pull ${FRONTEND_IMAGE}
-                        docker compose up
+                        docker-compose up
                     '''
                 }
             }
