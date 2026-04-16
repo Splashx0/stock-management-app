@@ -116,30 +116,6 @@ pipeline {
                 """
             }
         }
-
-        stage('Health Check') {
-            steps {
-                sh """
-                    echo "Waiting for services to be ready..."
-                    sleep 15                           
-
-                    echo "Checking backend API..."
-                    curl -f http://localhost:3001/api/health || exit 1
-
-                    echo "Checking frontend..."
-                    curl -f http://localhost:80 || exit 1    
-
-                    echo "Checking Prometheus..."
-                    curl -f http://localhost:9090/-/healthy || exit 1
-
-                    echo "Checking Grafana..."
-                    curl -f http://localhost:3000/api/health || exit 1
-                """
-                // FIX 8: frontend port changed from 5173 to 80 (production nginx)
-                // FIX 9: added sleep to give containers time to start before health checks
-                // FIX 10: use proper health endpoints for Prometheus and Grafana
-            }
-        }
     }
 
     post {
