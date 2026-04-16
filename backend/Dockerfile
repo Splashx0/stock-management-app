@@ -1,34 +1,33 @@
 # ========================
-# 1. Build stage
+# Build stage
 # ========================
-FROM node:20 AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy source code
 COPY . .
 
-# Generate Prisma client (safe without DB connection)
-RUN npx prisma generate
+# 👇 ADD THIS LINE
+ENV DATABASE_URL="postgresql://splash:splash@localhost:5432/stock_db"
 
-# Build project (TypeScript → JS)
+RUN npx prisma generate
 RUN npm run build
+
 
 
 # ========================
 # 2. Production stage
 # ========================
-FROM node:20
+    FROM node:20-alpine
 
 WORKDIR /app
 
 # Copy only necessary files
 COPY package*.json ./
-RUN npm install --only=production
+RUN npm install
 
 # Copy built app + Prisma
 COPY --from=builder /app/dist ./dist
