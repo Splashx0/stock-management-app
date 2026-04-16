@@ -51,7 +51,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ${PWD}/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - /var/jenkins_home/workspace/stock-management-cicd/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
