@@ -16,7 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PrintInvoice } from "./print-invoice";
 import { Printer } from "lucide-react";
@@ -63,7 +62,7 @@ export function OrderDetailsModal({
   onOpenChange,
   order,
 }: OrderDetailsModalProps) {
-  const [isPrinting, setIsPrinting] = useState(false);
+  const [, setIsPrinting] = useState(false);
   const printInvoiceRef = useRef<HTMLDivElement>(null);
 
   if (!order) return null;
@@ -219,7 +218,7 @@ export function OrderDetailsModal({
       </div>
 
       {/* Print-specific styles */}
-      <style jsx global>{`
+      <style>{`
         @media print {
           body * {
             visibility: hidden;

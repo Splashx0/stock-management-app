@@ -186,15 +186,8 @@ export default function OrdersPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const [ordersList, setOrdersList] = useState(orders);
-  const [showEditOrder, setShowEditOrder] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState<string>("");
-  const handleEditOrder = (e: any) => {
-    e.preventDefault();
-    setShowEditOrder(false);
-    setSelectedOrder(null);
-  };
 
   const viewOrderDetails = (order: (typeof orders)[0]) => {
     setSelectedOrder(order);
