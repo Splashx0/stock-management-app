@@ -13,12 +13,6 @@ RUN npm install
 # Copy project files
 COPY . . 
 
-# Copy Prisma schema
-COPY prisma ./prisma/
-
-# Generate Prisma client
-RUN npx prisma generate
-
 # Expose API port
 EXPOSE 3001
 
