@@ -46,13 +46,10 @@ services:
     container_name: stock_prometheus
     ports:
       - "9090:9090"
+    entrypoint: >
+      sh -c "echo -e 'global:\n  scrape_interval: 15s\nscrape_configs:\n  - job_name: prometheus\n    static_configs:\n      - targets: [\"localhost:9090\"]\n  - job_name: backend\n    static_configs:\n      - targets: [\"backend:3001\"]' > /tmp/prometheus.yml && exec /bin/prometheus --config.file=/tmp/prometheus.yml --storage.tsdb.path=/prometheus"
     volumes:
-      - type: bind
-        source: ${WORKSPACE}/monitoring/prometheus.yml
-        target: /etc/prometheus/prometheus.yml
-        read_only: true
       - prometheus_data:/prometheus
-    command: "--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus"
     networks:
       - stock-network
     depends_on:
