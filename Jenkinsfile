@@ -13,7 +13,7 @@ pipeline {
         // Load secrets from Jenkins credentials (Docker Hub)
         DOCKERHUB_USERNAME = credentials('dockerhub-username')
         DOCKERHUB_PASSWORD = credentials('dockerhub-password')
-        DATABASE_URL = credentials('database-url')
+        //DATABASE_URL = credentials('database-url')
         SONARQUBE_URL = credentials('sonarqube-url')
         SONARQUBE_TOKEN = credentials('sonarqube-token')
         
