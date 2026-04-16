@@ -1,0 +1,1066 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf-8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[margin=2cm]{geometry}
+\usepackage{hyperref}
+
+\title{Application de Gestion de Stock\\Rapport de Stage - Été 2026}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\chapter{Contexte et étude du projet}
+
+\section{Introduction}
+
+Ce rapport présente le travail réalisé durant ce stage d'été 2026. Le projet porte sur le développement et la mise en place d'une application complète de gestion de stock incluant une architecture microservices robuste, une infrastructure de monitoring et une pipeline de déploiement continu.
+
+L'objectif principal était de concevoir et déployer une solution complète d'entreprise avec un focus particulier sur la qualité du code, la sécurité et la performance. La solution intègre des technologies modernes comme Docker, Kubernetes (préparation), Jenkins pour l'intégration continue, et des outils de monitoring avec Prometheus et Grafana.
+
+\section{Présentation du projet}
+
+\subsection{Problématique}
+
+Les entreprises de distribution et de logistique font face à plusieurs défis majeurs :
+
+\begin{itemize}
+    \item \textbf{Gestion inefficace des stocks} : Manque de visibilité en temps réel sur l'inventaire
+    \item \textbf{Erreurs de saisie} : Processus manuels sujets à erreurs
+    \item \textbf{Mauvaise traçabilité} : Difficulté de suivre les commandes et les livraisons
+    \item \textbf{Absence de monitoring} : Pas de visibilité sur la performance du système
+    \item \textbf{Risques de sécurité} : Absence de scanner de vulnérabilités
+    \item \textbf{Processus de déploiement non automatisé} : Déploiements manuels et coûteux
+\end{itemize}
+
+\subsection{Solution proposée}
+
+Pour résoudre ces problèmes, une application web complète de gestion de stock a été développée avec les composants suivants :
+
+\subsubsection{Architecture Technique}
+
+\begin{itemize}
+    \item \textbf{Frontend} : Application React moderne avec TypeScript
+    \begin{itemize}
+        \item Framework Vite pour le build optimisé
+        \item Tailwind CSS pour le styling
+        \item Composants UI réutilisables
+    \end{itemize}
+    
+    \item \textbf{Backend} : API RESTful avec Node.js/Express
+    \begin{itemize}
+        \item ORM Prisma pour la gestion de base de données
+        \item PostgreSQL comme base de données principale
+        \item Authentification et autorisation
+    \end{itemize}
+    
+    \item \textbf{Containerisation} : Docker pour l'isolation et la portabilité
+    \item \textbf{Orchestration} : Préparation pour Kubernetes
+    \item \textbf{CI/CD} : Pipeline Jenkins automatisée
+    \item \textbf{Monitoring} : Stack avec Prometheus et Grafana
+    \item \textbf{Sécurité} : Trivy pour le scan de vulnérabilités
+    \item \textbf{Qualité de code} : SonarQube pour l'analyse statique
+\end{itemize}
+
+\subsubsection{Fonctionnalités Principales}
+
+L'application propose les fonctionnalités suivantes :
+
+\begin{enumerate}
+    \item \textbf{Gestion des produits} : CRUD complet avec catégorisation
+    \item \textbf{Gestion des commandes} : Suivi des commandes en temps réel
+    \item \textbf{Gestion des clients} : Portefeuille de clients avec historique
+    \item \textbf{Gestion des livraisons} : Attribution aux chauffeurs
+    \item \textbf{Dashboard analytique} : Visualisations et statistiques en temps réel
+    \item \textbf{API REST complète} : Intégrations externes possibles
+\end{enumerate}
+
+\section{Conclusion}
+
+La solution proposée répond directement aux enjeux identifiés en fournissant une plateforme moderne, sécurisée et performante. L'architecture choisie garantit la scalabilité et la maintenabilité à long terme.
+
+\newpage
+
+% ============================================
+% SECTION 2: ANALYSE ET SPÉCIFICATION DES BESOINS
+% ============================================
+\chapter{Analyse et spécification des besoins}
+
+\section{Besoins Fonctionnels}
+
+\subsection{Module Produits}
+\begin{itemize}
+    \item Créer, lire, mettre à jour, supprimer des produits
+    \item Catégoriser les produits
+    \item Gérer les stocks et les niveaux d'alerte
+    \item Rechercher et filtrer les produits
+\end{itemize}
+
+\subsection{Module Commandes}
+\begin{itemize}
+    \item Créer des commandes
+    \item Assigner des chauffeurs aux commandes
+    \item Suivre l'état des commandes (Pending, Delivered, Cancelled)
+    \item Générer des factures
+\end{itemize}
+
+\subsection{Module Clients}
+\begin{itemize}
+    \item Gérer la base de clients
+    \item Historique des commandes par client
+    \item Informations de contact
+\end{itemize}
+
+\subsection{Module Chauffeurs}
+\begin{itemize}
+    \item Gestion des chauffeurs
+    \item Suivi des livraisons
+    \item Attribution automatique des routes
+\end{itemize}
+
+\section{Besoins Non-Fonctionnels}
+
+\subsection{Performance}
+\begin{itemize}
+    \item Temps de réponse API inférieur à 200ms pour 95\% des requêtes
+    \item Support de 1000+ utilisateurs simultanés
+    \item Base de données optimisée avec index appropriés
+\end{itemize}
+
+\subsection{Sécurité}
+\begin{itemize}
+    \item Authentification JWT
+    \item Scan automatique des vulnérabilités (Trivy)
+    \item Analyse statique du code (SonarQube)
+    \item HTTPS obligatoire en production
+\end{itemize}
+
+\subsection{Fiabilité}
+\begin{itemize}
+    \item Monitoring 24/7 avec Prometheus et Grafana
+    \item Alertes automatiques pour anomalies
+    \item Logs centralisés
+    \item Redémarrage automatique des services
+\end{itemize}
+
+\subsection{Scalabilité}
+\begin{itemize}
+    \item Architecture microservices préparée
+    \item Conteneurisation Docker
+    \item Prêt pour déploiement Kubernetes
+    \item Load balancing possible
+\end{itemize}
+
+\section{Spécifications Techniques}
+
+\subsection{Stack Technologique}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Composant} & \textbf{Technologie} \\
+\hline
+Frontend & React 18.2 + TypeScript + Vite \\
+Backend & Node.js 20 + Express + TypeScript \\
+Base de Données & PostgreSQL 14+ \\
+ORM & Prisma 5 \\
+Containerisation & Docker + Docker Compose \\
+Orchestration & Kubernetes (préparation) \\
+CI/CD & Jenkins \\
+Monitoring & Prometheus + Grafana \\
+Analyse Statique & SonarQube \\
+Scan Sécurité & Trivy \\
+Styling & Tailwind CSS \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Architecture Base de Données}
+
+Les entités principales sont :
+\begin{itemize}
+    \item \textbf{Users} : Utilisateurs du système
+    \item \textbf{Customers} : Clients
+    \item \textbf{Products} : Produits en stock
+    \item \textbf{Categories} : Catégories de produits
+    \item \textbf{Orders} : Commandes
+    \item \textbf{Drivers} : Chauffeurs/Livreurs
+\end{itemize}
+
+\newpage
+
+% ============================================
+% SECTION 3: RÉALISATION
+% ============================================
+\chapter{Réalisation}
+
+\section{Structure du Projet}
+
+Le projet est organisé selon la structure suivante :
+
+\begin{verbatim}
+stock-management-app/
+├── backend/              # API REST Node.js
+│   ├── src/
+│   │   ├── controllers/
+│   │   ├── routes/
+│   │   └── server.ts
+│   └── Dockerfile
+├── frontend/             # Interface React
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── App.tsx
+│   └── Dockerfile
+├── monitoring/           # Stack monitoring
+├── jenkins/              # Configuration Jenkins
+├── trivy/                # Scan de sécurité
+├── Jenkinsfile           # Pipeline CI/CD
+└── docker-compose.yml
+\end{verbatim}
+
+\section{Développement du Backend}
+
+\subsection{API REST}
+
+L'API suit les conventions RESTful avec les endpoints principaux :
+
+\begin{verbatim}
+GET    /api/products           # Lister tous
+GET    /api/products/:id       # Détails
+POST   /api/products           # Créer
+PUT    /api/products/:id       # Modifier
+DELETE /api/products/:id       # Supprimer
+\end{verbatim}
+
+\subsection{Modèle de Données}
+
+Le schéma Prisma définit les entités principales :
+
+\begin{verbatim}
+model Product {
+  id        Int     @id @default(autoincrement())
+  name      String
+  price     Float
+  quantity  Int
+  status    String  
+}
+
+model Order {
+  id        Int     @id @default(autoincrement())
+  status    String  
+  total     Float
+}
+\end{verbatim}
+
+\section{Développement du Frontend}
+
+\subsection{Architecture Composants}
+
+Les composants principaux incluent :
+
+\begin{itemize}
+    \item Layout : Mise en page générale avec navigation
+    \item Dashboard : Tableau de bord analytique
+    \item Modaux : Création et édition d'entités
+    \item Tableaux : Affichage des listes
+    \item Formulaires : Validation avec React Hook Form
+\end{itemize}
+
+\section{Pipeline CI/CD avec Jenkins}
+
+\subsection{Étapes de la Pipeline}
+
+La pipeline Jenkins automatise le processus complet de déploiement :
+
+\begin{enumerate}
+    \item Clone Repository : Récupération du code
+    \item SonarQube Analysis : Analyse statique du code
+    \item Build Backend : Compilation et préparation
+    \item Build Frontend : Build Vite optimisé
+    \item Docker Build : Création des images Docker
+    \item Security Scan - Trivy : Scan de vulnérabilités
+    \item Push Registry : Push vers Docker Hub
+    \item Deploy : Déploiement en production
+    \item Health Check : Vérification des services
+\end{enumerate}
+
+\section{Scan de Sécurité avec Trivy}
+
+Trivy analyse les images Docker pour détecter les vulnérabilités. La commande de scan :
+
+\begin{verbatim}
+docker run --rm \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  aquasec/trivy:0.69.3 image \
+  --severity HIGH,CRITICAL \
+  --format json \
+  --output /reports/scan.json \
+  backend-image
+\end{verbatim}
+
+\section{Containerisation avec Docker}
+
+\subsection{Dockerfile Backend}
+
+Le backend est containerisé avec Node.js Alpine :
+
+\begin{verbatim}
+FROM node:20-alpine
+
+WORKDIR /app
+ENV DATABASE_URL=postgresql://dummy@localhost/dummy
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+COPY prisma ./prisma/
+RUN npx prisma generate
+
+EXPOSE 3001
+CMD ["npm", "run", "dev"]
+\end{verbatim}
+
+\section{Monitoring avec Prometheus et Grafana}
+
+\subsection{Configuration Prometheus}
+
+Prometheus scrape les métriques des applications :
+
+\begin{verbatim}
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'backend'
+    static_configs:
+      - targets: ['backend:3001']
+\end{verbatim}
+
+\subsection{Dashboards Grafana}
+
+Grafana affiche les métriques en temps réel :
+
+\begin{itemize}
+    \item Requêtes par seconde (RPS)
+    \item Temps de réponse (latence)
+    \item Utilisation CPU et mémoire
+    \item Taux d'erreur
+    \item Connections base de données
+\end{itemize}
+
+\section{Challenges et Solutions}
+
+\subsection{Challenge 1 : Intégration des Technologies}
+
+\textbf{Problème} : Intégration complexe de multiples services
+
+\textbf{Solution} : 
+\begin{itemize}
+    \item Isolation des services via Docker
+    \item Configuration progressive des intégrations
+    \item Documentation détaillée
+\end{itemize}
+
+\subsection{Challenge 2 : Sécurité des Vulnérabilités}
+
+\textbf{Problème} : Images Docker avec vulnérabilités
+
+\textbf{Solution} :
+\begin{itemize}
+    \item Utilisation d'images Alpine
+    \item Scan régulier avec Trivy
+    \item Mise à jour des dépendances
+\end{itemize}
+
+\subsection{Challenge 3 : Permissions Docker dans Jenkins}
+
+\textbf{Problème} : Permission denied sur docker.sock
+
+\textbf{Solution} :
+\begin{itemize}
+    \item Ajout de l'utilisateur Jenkins au groupe docker
+    \item Configuration du user root
+    \item Montage correct du volume
+\end{itemize}
+
+\newpage
+
+% ============================================
+% CONCLUSION GÉNÉRALE
+% ============================================
+\chapter*{Conclusion générale}
+\addcontentsline{toc}{chapter}{Conclusion générale}
+
+Ce stage a permis de mener à bien le développement complet d'une application de gestion de stock moderne et professionnelle. L'architecture mise en place combine les meilleures pratiques de l'industrie avec une attention particulière à la sécurité, la performance et la maintenabilité.
+
+\section*{Réalisations Principales}
+
+Les objectifs fixés ont été atteints :
+
+\begin{itemize}
+    \item Développement d'une application full-stack moderne
+    \item Architecture microservices containerisée
+    \item Pipeline CI/CD complètement automatisée
+    \item Intégration du monitoring en temps réel
+    \item Scan de sécurité automatisé (Trivy)
+    \item Analyse de code (SonarQube)
+    \item Infrastructure prête pour production
+\end{itemize}
+
+\section*{Compétences Développées}
+
+Durant ce stage, j'ai acquis une expertise en :
+
+\begin{itemize}
+    \item Développement full-stack JavaScript/TypeScript
+    \item Architecture microservices
+    \item Containerisation et orchestration
+    \item CI/CD et DevOps
+    \item Monitoring et observabilité
+    \item Sécurité des applications
+    \item Gestion de projets complexes
+\end{itemize}
+
+\section*{Perspectives Futures}
+
+L'application peut être améliorée et étendue avec :
+
+\begin{enumerate}
+    \item Déploiement Kubernetes : Orchestration avancée
+    \item API GraphQL : Alternative à REST
+    \item Machine Learning : Prévisions de stocks
+    \item Mobile Application : Application native
+    \item Intégration ERP : Connecteurs externes
+    \item Blockchain : Traçabilité avancée
+\end{enumerate}
+
+\section*{Apprentissages Clés}
+
+Ce projet a consolidé plusieurs apprentissages importants :
+
+\begin{itemize}
+    \item L'importance d'une architecture bien pensée dès le départ
+    \item L'automatisation des processus (CI/CD) gagne du temps à long terme
+    \item La sécurité doit être intégrée dès le départ
+    \item Le monitoring en production est crucial
+    \item La documentation et la communication sont essentielles
+\end{itemize}
+
+\section*{Remerciements}
+
+Je remercie particulièrement :
+\begin{itemize}
+    \item L'équipe technique pour son support
+    \item Les mentors pour leurs conseils avisés
+    \item Les outils open-source utilisés
+\end{itemize}
+
+\vspace{2cm}
+
+En conclusion, ce stage a été une expérience enrichissante qui m'a permis de développer une compréhension complète du cycle de vie d'une application d'entreprise, de la conception à la mise en production.
+
+\end{document}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Stock Management Application}
+\lhead{Rapport de Stage}
+\cfoot{\thepage}
+
+\title{\textbf{Application de Gestion de Stock}\\
+        \large Rapport de Stage - Été 2026}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+% ============================================
+% SECTION 1: CONTEXTE ET ÉTUDE DU PROJET
+% ============================================
+\chapter{Contexte et étude du projet}
+
+\section{Introduction}
+
+Ce rapport présente le travail réalisé durant ce stage d'été 2026. Le projet porte sur le développement et la mise en place d'une application complète de gestion de stock incluant une architecture microservices robuste, une infrastructure de monitoring et une pipeline de déploiement continu.
+
+L'objectif principal était de concevoir et déployer une solution complète d'entreprise avec un focus particulier sur la qualité du code, la sécurité et la performance. La solution intègre des technologies modernes comme Docker, Kubernetes (préparation), Jenkins pour l'intégration continue, et des outils de monitoring avec Prometheus et Grafana.
+
+\section{Présentation du projet}
+
+\subsection{Problématique}
+
+Les entreprises de distribution et de logistique font face à plusieurs défis majeurs :
+
+\begin{itemize}
+    \item \textbf{Gestion inefficace des stocks} : Manque de visibilité en temps réel sur l'inventaire
+    \item \textbf{Erreurs de saisie} : Processus manuels sujets à erreurs
+    \item \textbf{Mauvaise traçabilité} : Difficult de suivre les commandes et les livraisons
+    \item \textbf{Absence de monitoring} : Pas de visibility sur la performance du système
+    \item \textbf{Risques de sécurité} : Absence de scanner de vulnérabilités
+    \item \textbf{Processus de déploiement non automatisé} : Déploiements manuels et coûteux
+\end{itemize}
+
+\subsection{Solution proposée}
+
+Pour résoudre ces problèmes, une application web complète de gestion de stock a été développée avec :
+
+\subsubsection{Architecture Technique}
+
+\begin{itemize}
+    \item \textbf{Frontend} : Application React moderne avec TypeScript
+    \begin{itemize}
+        \item Framework Vite pour le build optimisé
+        \item Tailwind CSS pour le styling
+        \item Composants UI réutilisables
+    \end{itemize}
+    
+    \item \textbf{Backend} : API RESTful avec Node.js/Express
+    \begin{itemize}
+        \item ORM Prisma pour la gestion de base de données
+        \item PostgreSQL comme base de données principale
+        \item Authentification et autorisation
+    \end{itemize}
+    
+    \item \textbf{Containerisation} : Docker pour l'isolation et la portabilité
+    \item \textbf{Orchestration} : Préparation pour Kubernetes
+    \item \textbf{CI/CD} : Pipeline Jenkins automatisée
+    \item \textbf{Monitoring} : Stack ELK avec Prometheus et Grafana
+    \item \textbf{Sécurité} : Trivy pour le scan de vulnérabilités
+    \item \textbf{Qualité de code} : SonarQube pour l'analyse statique
+\end{itemize}
+
+\subsubsection{Fonctionnalités Principales}
+
+L'application propose les fonctionnalités suivantes :
+
+\begin{enumerate}
+    \item \textbf{Gestion des produits} : CRUD complet avec catégorisation
+    \item \textbf{Gestion des commandes} : Suivi des commandes en temps réel
+    \item \textbf{Gestion des clients} : Portefeuille de clients avec historique
+    \item \textbf{Gestion des livraisons} : Attribution aux chauffeurs
+    \item \textbf{Dashboard analytique} : Visualisations et statistiques en temps réel
+    \item \textbf{API REST complète} : Intégrations externes possibles
+\end{enumerate}
+
+\section{Conclusion}
+
+La solution proposée répond directement aux enjeux identifiés en fournissant une plateforme moderne, sécurisée et performante. L'architecture choisie garantit la scalabilité et la maintenabilité à long terme.
+
+\newpage
+
+% ============================================
+% SECTION 2: ANALYSE ET SPÉCIFICATION DES BESOINS
+% ============================================
+\chapter{Analyse et spécification des besoins}
+
+\section{Besoins Fonctionnels}
+
+\subsection{Module Produits}
+\begin{itemize}
+    \item Créer, lire, mettre à jour, supprimer des produits
+    \item Catégoriser les produits
+    \item Gérer les stocks et les niveaux d'alerte
+    \item Rechercher et filtrer les produits
+\end{itemize}
+
+\subsection{Module Commandes}
+\begin{itemize}
+    \item Créer des commandes
+    \item Assigner des chauffeurs aux commandes
+    \item Suivre l'état des commandes (Pending, Delivered, Cancelled)
+    \item Générer des factures
+\end{itemize}
+
+\subsection{Module Clients}
+\begin{itemize}
+    \item Gérer la base de clients
+    \item Historique des commandes par client
+    \item Informations de contact
+\end{itemize}
+
+\subsection{Module Chauffeurs}
+\begin{itemize}
+    \item Gestion des chauffeurs
+    \item Suivi des livraisons
+    \item Attribution automatique des routes
+\end{itemize}
+
+\section{Besoins Non-Fonctionnels}
+
+\subsection{Performance}
+\begin{itemize}
+    \item Temps de réponse API < 200ms pour 95\% des requêtes
+    \item Support de 1000+ utilisateurs simultanés
+    \item Base de données optimisée avec index appropriés
+\end{itemize}
+
+\subsection{Sécurité}
+\begin{itemize}
+    \item Authentification JWT
+    \item Scan automatique des vulnérabilités (Trivy)
+    \item Analyse statique du code (SonarQube)
+    \item HTTPS obligatoire en production
+\end{itemize}
+
+\subsection{Fiabilité}
+\begin{itemize}
+    \item Monitoring 24/7 avec Prometheus et Grafana
+    \item Alertes automatiques pour anomalies
+    \item Logs centralisés
+    \item Redémarrage automatique des services
+\end{itemize}
+
+\subsection{Scalabilité}
+\begin{itemize}
+    \item Architecture microservices préparée
+    \item Conteneurisation Docker
+    \item Prêt pour déploiement Kubernetes
+    \item Load balancing possible
+\end{itemize}
+
+\section{Spécifications Techniques}
+
+\subsection{Stack Technologique}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Composant} & \textbf{Technologie} \\
+\hline
+Frontend & React 18.2 + TypeScript + Vite \\
+Backend & Node.js 20 + Express + TypeScript \\
+Base de Données & PostgreSQL 14+ \\
+ORM & Prisma 5 \\
+Containerisation & Docker + Docker Compose \\
+Orchestration & Kubernetes (préparation) \\
+CI/CD & Jenkins \\
+Monitoring & Prometheus + Grafana \\
+Analyse Statique & SonarQube \\
+Scan Sécurité & Trivy \\
+Styling & Tailwind CSS \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Architecture Base de Données}
+
+Les entités principales sont :
+\begin{itemize}
+    \item \textbf{Users} : Utilisateurs du système
+    \item \textbf{Customers} : Clients
+    \item \textbf{Products} : Produits en stock
+    \item \textbf{Categories} : Catégories de produits
+    \item \textbf{Orders} : Commandes
+    \item \textbf{Drivers} : Chauffeurs/Livreurs
+\end{itemize}
+
+\newpage
+
+% ============================================
+% SECTION 3: RÉALISATION
+% ============================================
+\chapter{Réalisation}
+
+\section{Structure du Projet}
+
+Le projet est organisé selon la structure suivante :
+
+\begin{lstlisting}
+stock-management-app/
+├── backend/                    # API REST Node.js
+│   ├── src/
+│   │   ├── controllers/       # Logique métier
+│   │   ├── routes/            # Définition des routes
+│   │   ├── middleware/        # Middlewares
+│   │   └── server.ts          # Point d'entrée
+│   ├── prisma/
+│   │   └── schema.prisma      # Schéma BD
+│   └── Dockerfile             # Containerisation
+├── frontend/                   # Interface React
+│   ├── src/
+│   │   ├── components/        # Composants React
+│   │   ├── pages/             # Pages principales
+│   │   ├── services/          # Appels API
+│   │   └── App.tsx            # Composant racine
+│   └── Dockerfile             # Containerisation
+├── monitoring/                 # Stack monitoring
+│   ├── prometheus.yml         # Config Prometheus
+│   ├── alert-rules.yml        # Règles d'alerte
+│   └── docker-compose.yml     # Compose monitoring
+├── jenkins/                    # Configuration Jenkins
+│   └── docker-compose.yml     # Jenkins containerisé
+├── trivy/                      # Scan de sécurité
+│   └── docker-compose.yml     # Trivy containerisé
+├── sonarQube/                  # Analyse de code
+│   └── docker-compose.yml     # SonarQube containerisé
+├── Jenkinsfile                # Pipeline CI/CD
+└── docker-compose.yml         # Compose production
+\end{lstlisting}
+
+\section{Développement du Backend}
+
+\subsection{API REST}
+
+L'API suit les conventions RESTful avec les endpoints suivants :
+
+\begin{lstlisting}
+# Produits
+GET    /api/products           # Lister tous les produits
+GET    /api/products/:id       # Détails d'un produit
+POST   /api/products           # Créer un produit
+PUT    /api/products/:id       # Modifier un produit
+DELETE /api/products/:id       # Supprimer un produit
+
+# Commandes
+GET    /api/orders             # Lister les commandes
+GET    /api/orders/:id         # Détails d'une commande
+POST   /api/orders             # Créer une commande
+PUT    /api/orders/:id         # Modifier une commande
+
+# Clients
+GET    /api/customers          # Lister les clients
+POST   /api/customers          # Créer un client
+\end{lstlisting}
+
+\subsection{Modèle de Données}
+
+Le schéma Prisma définit les relations entre les entités :
+
+\begin{lstlisting}[language=bash]
+model Product {
+  id        Int     @id @default(autoincrement())
+  name      String
+  price     Float
+  reference String  @unique
+  quantity  Int
+  category  Category?
+  status    String  // IN_STOCK, LOW_STOCK, OUT_OF_STOCK
+  orders    Order[]
+}
+
+model Order {
+  id        Int     @id @default(autoincrement())
+  customer  Customer?
+  products  Product[]
+  driver    Driver?
+  status    String  // PENDING, DELIVERED, CANCELLED
+  total     Float
+}
+\end{lstlisting}
+
+\section{Développement du Frontend}
+
+\subsection{Architecture Composants}
+
+Les composants principaux incluent :
+
+\begin{itemize}
+    \item \textbf{Layout} : Mise en page générale avec navigation
+    \item \textbf{Dashboard} : Tableau de bord analytique
+    \item \textbf{Modaux} : Création et édition d'entités
+    \item \textbf{Tableaux} : Affichage des listes avec pagination
+    \item \textbf{Formulaires} : Validation avec React Hook Form
+\end{itemize}
+
+\subsection{Intégration API}
+
+Le service API centralise les appels :
+
+\begin{lstlisting}[language=bash]
+// services/api.ts
+import axios from 'axios';
+
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  headers: { 'Content-Type': 'application/json' }
+});
+
+export const productService = {
+  getAll: () => apiClient.get('/api/products'),
+  create: (data) => apiClient.post('/api/products', data),
+  update: (id, data) => apiClient.put(`/api/products/\${id}`, data)
+};
+\end{lstlisting}
+
+\section{Pipeline CI/CD avec Jenkins}
+
+\subsection{Étapes de la Pipeline}
+
+La pipeline Jenkins automatise le processus complet de déploiement :
+
+\begin{enumerate}
+    \item \textbf{Clone Repository} : Récupération du code
+    \item \textbf{SonarQube Analysis} : Analyse statique du code
+    \item \textbf{Build Backend} : Compilation et préparation
+    \item \textbf{Build Frontend} : Build Vite optimisé
+    \item \textbf{Docker Build} : Création des images Docker
+    \item \textbf{Security Scan - Trivy} : Scan de vulnérabilités
+    \item \textbf{Push Registry} : Push vers Docker Hub
+    \item \textbf{Deploy} : Déploiement en production
+    \item \textbf{Health Check} : Vérification des services
+\end{enumerate}
+
+\subsection{Scan de Sécurité avec Trivy}
+
+Trivy analyse les images Docker pour détecter les vulnérabilités :
+
+\begin{lstlisting}[language=bash]
+stage('Security Scan - Trivy') {
+    steps {
+        script {
+            sh '''
+                docker run --rm \
+                  -v /var/run/docker.sock:/var/run/docker.sock \
+                  -v ${WORKSPACE}/trivy-reports:/reports \
+                  aquasec/trivy:0.69.3 image \
+                  --severity HIGH,CRITICAL \
+                  --format json \
+                  --output /reports/backend-trivy.json \
+                  ${BACKEND_IMAGE}
+            '''
+        }
+    }
+}
+\end{lstlisting}
+
+\section{Containerisation avec Docker}
+
+\subsection{Dockerfile Backend}
+
+Le backend est containerisé avec Node.js Alpine :
+
+\begin{lstlisting}[language=bash]
+FROM node:20-alpine
+
+WORKDIR /app
+ENV DATABASE_URL=postgresql://dummy@localhost/dummy
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+COPY prisma ./prisma/
+RUN npx prisma generate
+
+EXPOSE 3001
+CMD ["npm", "run", "dev"]
+\end{lstlisting}
+
+\subsection{Docker Compose}
+
+L'orchestration des services se fait via docker-compose :
+
+\begin{lstlisting}[language=bash]
+version: '3.8'
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://user:pass@db:5432/db
+    depends_on:
+      - db
+      
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+\end{lstlisting}
+
+\section{Monitoring avec Prometheus et Grafana}
+
+\subsection{Configuration Prometheus}
+
+Prometheus scrape les métriques des applications :
+
+\begin{lstlisting}[language=bash]
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'backend'
+    static_configs:
+      - targets: ['backend:3001']
+  
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+\end{lstlisting}
+
+\subsection{Dashboards Grafana}
+
+Grafana affiche les métriques en temps réel :
+
+\begin{itemize}
+    \item Requêtes par seconde (RPS)
+    \item Temps de réponse (latence)
+    \item Utilisation CPU et mémoire
+    \item Taux d'erreur
+    \item Connections base de données
+\end{itemize}
+
+\section{Analyse du Code avec SonarQube}
+
+SonarQube analyse la qualité du code :
+
+\begin{lstlisting}[language=bash]
+stage('SonarQube Analysis') {
+    steps {
+        script {
+            sh '''
+                sonar-scanner \
+                  -Dsonar.projectKey=stock-backend \
+                  -Dsonar.host.url=${SONARQUBE_URL} \
+                  -Dsonar.login=${SONARQUBE_TOKEN} \
+                  -Dsonar.sources=src
+            '''
+        }
+    }
+}
+\end{lstlisting}
+
+\subsection{Métriques Surveillées}
+
+\begin{itemize}
+    \item \textbf{Code Smells} : Problèmes de maintenabilité
+    \item \textbf{Bugs} : Défauts détectés
+    \item \textbf{Vulnérabilités} : Failles de sécurité
+    \item \textbf{Couverture de tests} : \% de code testé
+    \item \textbf{Duplication} : Code en double
+\end{itemize}
+
+\section{Challenges et Solutions}
+
+\subsection{Challenge 1 : Intégration des Technologies}
+
+\textbf{Problème} : Intégration complexe de multiples services (Docker, Jenkins, Prometheus, etc.)
+
+\textbf{Solution} : 
+\begin{itemize}
+    \item Isolation des services via Docker
+    \item Configuration progressive des intégrations
+    \item Documentation détaillée des dépendances
+\end{itemize}
+
+\subsection{Challenge 2 : Sécurité des Vulnérabilités}
+
+\textbf{Problème} : Images Docker avec vulnérabilités détectées par Trivy
+
+\textbf{Solution} :
+\begin{itemize}
+    \item Utilisation d'images Alpine pour réduire la surface d'attaque
+    \item Scan régulier avec Trivy
+    \item Mise à jour des dépendances
+\end{itemize}
+
+\subsection{Challenge 3 : Permissions Docker dans Jenkins}
+
+\textbf{Problème} : Permission denied sur docker.sock
+
+\textbf{Solution} :
+\begin{itemize}
+    \item Ajout de l'utilisateur Jenkins au groupe docker
+    \item Configuration du user root dans le compose
+    \item Montage correct du volume docker.sock
+\end{itemize}
+
+\newpage
+
+% ============================================
+% CONCLUSION GÉNÉRALE
+% ============================================
+\chapter*{Conclusion générale}
+\addcontentsline{toc}{chapter}{Conclusion générale}
+
+Ce stage a permis de mener à bien le développement complet d'une application de gestion de stock moderne et professionnelle. L'architecture mise en place combine les meilleures pratiques de l'industrie avec une attention particulière à la sécurité, la performance et la maintenabilité.
+
+\section*{Réalisations Principales}
+
+Les objectifs fixés ont été atteints :
+
+\begin{itemize}
+    \item ✓ Développement d'une application full-stack moderne
+    \item ✓ Architecture microservices containerisée
+    \item ✓ Pipeline CI/CD complètement automatisée
+    \item ✓ Intégration du monitoring en temps réel
+    \item ✓ Scan de sécurité automatisé (Trivy)
+    \item ✓ Analyse de code (SonarQube)
+    \item ✓ Infrastructure prête pour production
+\end{itemize}
+
+\section*{Compétences Développées}
+
+Durant ce stage, j'ai acquis une expertise en :
+
+\begin{itemize}
+    \item Développement full-stack JavaScript/TypeScript
+    \item Architecture microservices
+    \item Containerisation et orchestration
+    \item CI/CD et DevOps
+    \item Monitoring et observabilité
+    \item Sécurité des applications
+    \item Gestion de projets complexes
+\end{itemize}
+
+\section*{Perspectives Futures}
+
+L'application peut être améliorée et étendue avec :
+
+\begin{enumerate}
+    \item \textbf{Déploiement Kubernetes} : Orchestration avancée
+    \item \textbf{API GraphQL} : Alternative à REST
+    \item \textbf{Machine Learning} : Prévisions de stocks
+    \item \textbf{Mobile Application} : Application native
+    \item \textbf{Intégration ERP} : Connecteurs externes
+    \item \textbf{Blockchain} : Traçabilité avancée
+\end{enumerate}
+
+\section*{Apprentissages Clés}
+
+Ce projet a consolidé plusieurs apprentissages importants :
+
+\begin{itemize}
+    \item L'importance d'une architecture bien pensée dès le départ
+    \item L'automatisation des processus (CI/CD) gagne du temps à long terme
+    \item La sécurité doit être intégrée dès le départ, pas ajoutée après
+    \item Le monitoring en production est crucial pour identifier les problèmes
+    \item La documentation et la communication sont essentielles en équipe
+\end{itemize}
+
+\section*{Remerciements}
+
+Je remercie particulièrement :
+\begin{itemize}
+    \item L'équipe technique pour son support
+    \item Les mentors pour leurs conseils avisés
+    \item Les outils open-source qui ont rendu ce projet possible
+\end{itemize}
+
+\vspace{2cm}
+
+En conclusion, ce stage a été une expérience enrichissante qui m'a permis de développer une compréhension complète du cycle de vie d'une application d'entreprise, de la conception à la mise en production.
+
+\end{document}

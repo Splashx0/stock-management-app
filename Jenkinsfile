@@ -110,7 +110,6 @@ pipeline {
                           -v /var/run/docker.sock:/var/run/docker.sock \
                           -v ${WORKSPACE}/trivy-reports:/reports \
                           aquasec/trivy:0.69.3 image \
-                          --skip-db-update \
                           --severity HIGH,CRITICAL \
                           --format json \
                           --output /reports/backend-trivy-$(date +%Y%m%d-%H%M%S).json \
@@ -121,7 +120,6 @@ pipeline {
                           -v /var/run/docker.sock:/var/run/docker.sock \
                           -v ${WORKSPACE}/trivy-reports:/reports \
                           aquasec/trivy:0.69.3 image \
-                          --skip-db-update \
                           --severity HIGH,CRITICAL \
                           --format json \
                           --output /reports/frontend-trivy-$(date +%Y%m%d-%H%M%S).json \
