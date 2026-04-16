@@ -14,8 +14,6 @@ pipeline {
         DOCKERHUB_PASSWORD = credentials('dockerhub-password')
         SONARQUBE_URL      = credentials('sonarqube-url')
         SONARQUBE_TOKEN    = credentials('sonarqube-token')
-        DATABASE_URL       = "postgresql://splash:splash@host.docker.internal:5432/stock_db" 
-
         BACKEND_IMAGE  = "${DOCKERHUB_USERNAME}/stock-backend:${BUILD_NUMBER}"
         FRONTEND_IMAGE = "${DOCKERHUB_USERNAME}/stock-frontend:${BUILD_NUMBER}"
     }
