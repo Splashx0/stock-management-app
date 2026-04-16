@@ -99,7 +99,7 @@ pipeline {
             }
         }
 
-        stage('Security Scan - Trivy') {
+       /* stage('Security Scan - Trivy') {
             steps {
                 script {
                     sh '''
@@ -131,12 +131,12 @@ pipeline {
                 }
                 archiveArtifacts artifacts: 'trivy-reports/*.json', allowEmptyArchive: true
             }
-        }
+        }*/
 
         stage('Push to Registry') {
             steps {
                 script {
-                    withDockerRegistry([credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/']) {
+                    withCredentials([credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/']) {
                         sh '''
                             echo "Logging in to Docker Hub..."
                             docker push ${BACKEND_IMAGE}

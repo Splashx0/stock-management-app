@@ -1,0 +1,851 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[french]{babel}
+\usepackage[margin=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    frame=single,
+    backgroundcolor=\color{lightgray!20}
+}
+
+\title{Application de Gestion de Stock\\Rapport de Stage - Été 2026}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+% ============================================
+% CHAPITRE 1: CADRE DU PROJET
+% ============================================
+\chapter{Cadre du projet}
+
+\section{Introduction}
+
+Ce rapport présente le travail réalisé durant ce stage d'été 2026. Le projet porte sur le développement et la mise en place d'une application complète de gestion de stock incluant une architecture microservices robuste, une infrastructure de monitoring et une pipeline de déploiement continu.
+
+L'objectif principal était de concevoir et déployer une solution complète d'entreprise avec un focus particulier sur la qualité du code, la sécurité et la performance.
+
+\section{1.1 Contexte}
+
+\subsection{Environnement professionnel}
+
+Les entreprises de distribution et de logistique font face à plusieurs défis majeurs dans la gestion de leurs opérations :
+
+\begin{itemize}
+    \item Croissance rapide et besoin de scalabilité
+    \item Complexité des chaînes d'approvisionnement
+    \item Exigences de conformité et de traçabilité
+    \item Pression concurrentielle pour l'innovation
+\end{itemize}
+
+\subsection{Contexte technologique}
+
+Le contexte technologique actuel favorise :
+
+\begin{itemize}
+    \item L'adoption du cloud et de la containerisation
+    \item L'automatisation des processus DevOps
+    \item La mise en place du monitoring en temps réel
+    \item La sécurité intégrée (SecOps)
+\end{itemize}
+
+\section{1.2 Problématique}
+
+\subsection{Défis identifiés}
+
+Les entreprises de distribution et de logistique font face à plusieurs défis majeurs :
+
+\begin{itemize}
+    \item \textbf{Gestion inefficace des stocks} : Manque de visibilité en temps réel sur l'inventaire
+    \item \textbf{Erreurs de saisie} : Processus manuels sujets à erreurs
+    \item \textbf{Mauvaise traçabilité} : Difficulté de suivre les commandes et les livraisons
+    \item \textbf{Absence de monitoring} : Pas de visibilité sur la performance du système
+    \item \textbf{Risques de sécurité} : Absence de scanner de vulnérabilités
+    \item \textbf{Processus de déploiement non automatisé} : Déploiements manuels et coûteux
+\end{itemize}
+
+\subsection{Questions de recherche}
+
+\begin{enumerate}
+    \item Comment concevoir une solution moderne et scalable ?
+    \item Comment automatiser le cycle de déploiement ?
+    \item Comment intégrer la sécurité dans le processus ?
+    \item Comment assurer le monitoring continu ?
+\end{enumerate}
+
+\section{1.3 Solution proposée}
+
+\subsection{Architecture globale}
+
+Pour résoudre ces problèmes, une application web complète de gestion de stock a été développée avec les composants suivants :
+
+\begin{itemize}
+    \item \textbf{Frontend} : Application React moderne avec TypeScript et Vite
+    \item \textbf{Backend} : API RESTful avec Node.js/Express et Prisma
+    \item \textbf{Base de données} : PostgreSQL
+    \item \textbf{Containerisation} : Docker et Docker Compose
+    \item \textbf{CI/CD} : Pipeline Jenkins automatisée
+    \item \textbf{Monitoring} : Prometheus et Grafana
+    \item \textbf{Sécurité} : Trivy et SonarQube
+\end{itemize}
+
+\subsection{Fonctionnalités principales}
+
+L'application propose :
+
+\begin{enumerate}
+    \item Gestion des produits avec catégorisation
+    \item Gestion des commandes en temps réel
+    \item Gestion des clients et historique
+    \item Gestion des livraisons et chauffeurs
+    \item Dashboard analytique
+    \item API REST complète
+\end{enumerate}
+
+\newpage
+
+% ============================================
+% CHAPITRE 2: CONCEPTS DE BASE (VIRTUALISATION ET CLOUD COMPUTING)
+% ============================================
+\chapter{Concepts de base (Virtualisation et Cloud Computing)}
+
+\section{Introduction}
+
+Ce chapitre présente les concepts fondamentaux de virtualisation et de cloud computing qui constituent la base de notre infrastructure DevOps.
+
+\section{2.1 La virtualisation}
+
+\subsection{2.1.1 Présentation}
+
+La virtualisation est une technologie permettant de créer des ressources informatiques abstraites plutôt que physiques. Elle permet d'utiliser une même ressource physique pour plusieurs environnements isolés.
+
+\subsubsection{Définition}
+
+La virtualisation est le processus de création d'une version logicielle (virtuelle) d'une ressource physique, comme un serveur, un système d'exploitation ou un périphérique de stockage.
+
+\subsection{2.1.2 Techniques de virtualisation système}
+
+\subsubsection{Hyperviseur de Type 1}
+
+Exécuté directement sur le matériel sans système d'exploitation hôte :
+
+\begin{itemize}
+    \item VMware ESXi
+    \item Hyper-V (Microsoft)
+    \item KVM (Kernel-based Virtual Machine)
+\end{itemize}
+
+\subsubsection{Hyperviseur de Type 2}
+
+Exécuté sur un système d'exploitation hôte :
+
+\begin{itemize}
+    \item VMware Workstation
+    \item VirtualBox
+    \item Parallels Desktop
+\end{itemize}
+
+\subsection{2.1.3 Types de virtualisation}
+
+\begin{itemize}
+    \item \textbf{Virtualisation complète} : Machine virtuelle dispose de tous les éléments matériels
+    \item \textbf{Paravirtualisation} : Machine virtuelle consciente de sa nature virtuelle
+    \item \textbf{Virtualisation au niveau du système d'exploitation} : Partage du noyau
+\end{itemize}
+
+\subsection{2.1.4 La différence entre VM et CT}
+
+\subsubsection{Machines Virtuelles (VM)}
+
+\begin{itemize}
+    \item Émulation complète du matériel
+    \item Chaque VM a son propre système d'exploitation
+    \item Isolation complète
+    \item Consommation de ressources plus importante
+\end{itemize}
+
+\subsubsection{Conteneurs (CT)}
+
+\begin{itemize}
+    \item Partage du noyau du système d'exploitation
+    \item Légers et rapides à démarrer
+    \item Utilisation efficace des ressources
+    \item Isolation au niveau du processus
+\end{itemize}
+
+\subsection{Comparaison}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Aspect} & \textbf{VM} & \textbf{Conteneur} \\
+\hline
+Taille & 100 MB - plusieurs GB & 10 MB - 100 MB \\
+Démarrage & Secondes à minutes & Millisecondes à secondes \\
+Isolation & Complète & Au niveau processus \\
+OS & Chacun son OS & Partagé \\
+Performance & Surcharge d'hyperviseur & Natif \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{2.2 Cloud Computing}
+
+\subsection{2.2.1 Présentation}
+
+Le cloud computing est un modèle de fourniture de services informatiques via Internet, où les ressources sont distribuées, flexibles et accessibles à la demande.
+
+\subsection{2.2.2 Caractéristiques du Cloud Computing}
+
+Le NIST (National Institute of Standards and Technology) définit 5 caractéristiques essentielles :
+
+\begin{enumerate}
+    \item \textbf{Accès à la demande} : Ressources disponibles sans interaction humaine
+    \item \textbf{Accès réseau large} : Disponible sur le réseau
+    \item \textbf{Mutualisation des ressources} : Ressources partagées entre plusieurs clients
+    \item \textbf{Élasticité rapide} : Ressources provisionnées et libérées rapidement
+    \item \textbf{Mesure du service} : Consommation mesurée et transparente
+\end{enumerate}
+
+\subsection{2.2.3 Les services Cloud}
+
+\subsubsection{IaaS (Infrastructure as a Service)}
+
+\begin{itemize}
+    \item Fournisseur : AWS, Azure, Google Cloud, Digital Ocean
+    \item Offre : Serveurs virtuels, stockage, réseau
+    \item Responsabilité client : OS, Applications, Données
+\end{itemize}
+
+\subsubsection{PaaS (Platform as a Service)}
+
+\begin{itemize}
+    \item Fournisseur : Heroku, Google App Engine, AWS Elastic Beanstalk
+    \item Offre : Runtime, Outils de développement, Bases de données
+    \item Responsabilité client : Applications, Données
+\end{itemize}
+
+\subsubsection{SaaS (Software as a Service)}
+
+\begin{itemize}
+    \item Fournisseur : Microsoft Office 365, Salesforce, Google Workspace
+    \item Offre : Applications complètes
+    \item Responsabilité client : Données uniquement
+\end{itemize}
+
+\subsection{2.2.4 Les modèles de déploiement du Cloud}
+
+\begin{enumerate}
+    \item \textbf{Cloud Public} : Infrastructure partagée, accessible au public
+    \item \textbf{Cloud Privé} : Infrastructure propriétaire, accès restreint
+    \item \textbf{Cloud Hybride} : Combinaison de cloud public et privé
+    \item \textbf{Cloud Communautaire} : Infrastructure partagée par un groupe d'organisations
+\end{enumerate}
+
+\section{2 Conclusion}
+
+La virtualisation et le cloud computing sont les fondations de notre approche DevOps, permettant la scalabilité, l'flexibilité et l'efficacité des ressources.
+
+\newpage
+
+% ============================================
+% CHAPITRE 3: NOTION DEVOPS
+% ============================================
+\chapter{Notion DevOps}
+
+\section{Introduction}
+
+Ce chapitre explore les concepts fondamentaux de DevOps, une approche révolutionnaire qui transforme la façon dont les organisations développent, déploient et maintiennent leurs applications.
+
+\section{1.1 La notion DevOps}
+
+\subsection{1.1.1 Définition de DevOps}
+
+DevOps est une approche collaborative qui combine développement logiciel (Dev) et opérations informatiques (Ops). L'objectif est d'automatiser et d'intégrer les processus de développement, de test et de déploiement pour livrer des applications de qualité plus rapidement.
+
+\subsection{Mis en contexte}
+
+\subsubsection{Avant DevOps}
+
+\begin{itemize}
+    \item Séparation claire entre Dev et Ops
+    \item Communication limitée entre les équipes
+    \item Déploiements lents et manuels
+    \item Haute latence entre le code et la production
+    \item Responsabilités cloisonnées
+\end{itemize}
+
+\subsubsection{Après DevOps}
+
+\begin{itemize}
+    \item Collaboration étroite entre Dev et Ops
+    \item Automatisation maximale
+    \item Déploiements fréquents et rapides
+    \item Feedback immédiat
+    \item Responsabilité partagée
+\end{itemize}
+
+\subsection{Qu'est-ce que le DevOps ?}
+
+DevOps n'est pas un outil, une technologie ou un rôle. C'est une \textbf{philosophie, une culture et un ensemble de pratiques} qui promeut :
+
+\begin{enumerate}
+    \item \textbf{Collaboration} : Communication entre tous les acteurs
+    \item \textbf{Automatisation} : Scripts et outils pour réduire l'intervention manuelle
+    \item \textbf{Mesure} : Collecte et analyse des métriques
+    \item \textbf{Partage} : Transparence et documentation
+    \item \textbf{Amélioration continue} : Itération et optimisation
+\end{enumerate}
+
+\subsubsection{Les piliers de DevOps}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{5cm}|}
+\hline
+\textbf{Pilier} & \textbf{Description} \\
+\hline
+Planification & Définition des objectifs et des ressources \\
+Code & Contrôle de version et collaboration \\
+Build & Compilation et empaquetage \\
+Test & Vérification de la qualité \\
+Release & Préparation du déploiement \\
+Deploy & Mise en production \\
+Opérer & Maintenance et support \\
+Monitor & Supervision et alertes \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ============================================
+% CHAPITRE 3: ETAT DE L'ART
+% ============================================
+\chapter{Etat de l'art}
+
+\section{Introduction}
+
+Ce chapitre présente l'état actuel des technologies et des pratiques DevOps qui sont au cœur de notre projet.
+
+\section{1. Intégration continue}
+
+\subsection{1.1.1 Définition de l'intégration continue}
+
+L'intégration continue (CI) est une pratique DevOps où les développeurs intègrent leur code dans un référentiel partagé plusieurs fois par jour. Chaque intégration est vérifiée par un build automatisé et des tests.
+
+\subsubsection{Objectifs}
+
+\begin{itemize}
+    \item Détecter les erreurs rapidement
+    \item Réduire les problèmes d'intégration
+    \item Améliorer la qualité du code
+    \item Accélérer le cycle de développement
+\end{itemize}
+
+\subsection{1.1.2 Les étapes de l'Intégration Continue}
+
+\begin{enumerate}
+    \item \textbf{Commit} : Développeur pousse son code dans Git
+    \item \textbf{Webhook Trigger} : Le serveur CI détecte le changement
+    \item \textbf{Checkout} : Récupération du code
+    \item \textbf{Build} : Compilation et construction
+    \item \textbf{Test} : Exécution des tests automatisés
+    \item \textbf{Analyse} : SonarQube, Linting, Coverage
+    \item \textbf{Report} : Génération de rapports
+    \item \textbf{Notification} : Feedback au développeur
+\end{enumerate}
+
+\subsection{1.1.3 Qu'apporte l'intégration continue ?}
+
+\begin{itemize}
+    \item \textbf{Qualité} : Détection précoce des bugs
+    \item \textbf{Rapidité} : Feedback immédiat
+    \item \textbf{Fiabilité} : Processus reproductible
+    \item \textbf{Confiance} : Déploiements sûrs
+    \item \textbf{Efficacité} : Réduction du temps de cycle
+\end{itemize}
+
+\section{2. Déploiement continu / Distribution continue}
+
+\subsection{Définitions}
+
+\subsubsection{Continuous Delivery (CD)}
+
+Capacité à déployer le code en production à tout moment, mais pas nécessairement le faire automatiquement.
+
+\subsubsection{Continuous Deployment (CD)}
+
+Déploiement automatique et continu en production après les tests réussis.
+
+\subsection{Pipeline CI/CD}
+
+\begin{verbatim}
+Code -> Build -> Test -> Deploy
+ |      |       |       |
+Git    Docker  Tests   Prod
+Webhook Auto   Auto    Auto
+\end{verbatim}
+
+\section{3. Technologie Docker}
+
+\subsection{3.1 Qu'est-ce que Docker ?}
+
+Docker est une plateforme de containerisation qui permet de créer, de déployer et d'exécuter des applications dans des conteneurs légers et isolés.
+
+\subsection{3.2 Composants Docker}
+
+\begin{enumerate}
+    \item \textbf{Docker Image} : Template statique avec tout ce qui est nécessaire
+    \item \textbf{Docker Container} : Instance en exécution d'une image
+    \item \textbf{Dockerfile} : Fichier de configuration pour construire une image
+    \item \textbf{Docker Registry} : Référentiel d'images (Docker Hub)
+    \item \textbf{Docker Compose} : Orchestration multi-conteneurs
+\end{enumerate}
+
+\subsection{3.3 Avantages de Docker}
+
+\begin{itemize}
+    \item Portabilité : Fonctionne partout
+    \item Légèreté : Moins de surcharge que les VM
+    \item Isolement : Chaque conteneur est isolé
+    \item Rapidité : Démarrage en millisecondes
+    \item Cohérence : Même environnement partout
+\end{itemize}
+
+\newpage
+
+% ============================================
+% CHAPITRE 4: ETUDE COMPARATIVE DES OUTILS DEVOPS
+% ============================================
+\chapter{Etude comparative des outils DevOps}
+
+\section{Introduction}
+
+L'écosystème DevOps offre un large choix d'outils. Ce chapitre présente une étude comparative des principaux outils utilisés pour notre projet.
+
+\section{1. Démarche de l'étude comparative}
+
+\subsection{Critères d'évaluation}
+
+\begin{itemize}
+    \item Fonctionnalités
+    \item Facilité d'utilisation
+    \item Performance
+    \item Coût
+    \item Support communautaire
+    \item Documentation
+    \item Intégration
+\end{itemize}
+
+\section{2. Outils de gestion de code source}
+
+\subsection{Git}
+
+\begin{itemize}
+    \item \textbf{Avantages} : Distribué, rapide, gratuit, standard de l'industrie
+    \item \textbf{Inconvénients} : Courbe d'apprentissage
+    \item \textbf{Utilisation} : Contrôle de version
+\end{itemize}
+
+\subsection{GitHub}
+
+\begin{itemize}
+    \item \textbf{Avantages} : Interface intuitive, collaboration facile, gratuit pour projets publics
+    \item \textbf{Inconvénients} : Dépendance cloud
+    \item \textbf{Utilisation} : Hébergement et gestion de code
+\end{itemize}
+
+\section{3. Outils d'intégration continue}
+
+\subsection{Jenkins}
+
+\begin{itemize}
+    \item \textbf{Avantages} : Libre, extensible, largement utilisé
+    \item \textbf{Inconvénients} : Configuration complexe
+    \item \textbf{Utilisation} : Orchestration de pipeline CI/CD
+\end{itemize}
+
+\subsection{GitLab CI}
+
+\begin{itemize}
+    \item \textbf{Avantages} : Intégré, configuration simple, performant
+    \item \textbf{Inconvénients} : Moins d'extensions
+    \item \textbf{Utilisation} : CI/CD intégré à GitLab
+\end{itemize}
+
+\subsection{GitHub Actions}
+
+\begin{itemize}
+    \item \textbf{Avantages} : Intégré à GitHub, gratuit, facile
+    \item \textbf{Inconvénients} : Limité à GitHub
+    \item \textbf{Utilisation} : CI/CD natif GitHub
+\end{itemize}
+
+\section{4. Outils de gestion de configuration et automation}
+
+\subsection{Ansible}
+
+\begin{itemize}
+    \item \textbf{Avantages} : Sans agent, YAML simple, agentless
+    \item \textbf{Inconvénients} : Plus lent pour grandes infrastrures
+    \item \textbf{Utilisation} : Configuration et deployment
+\end{itemize}
+
+\subsection{Terraform}
+
+\begin{itemize}
+    \item \textbf{Avantages} : Infrastructure as Code, multi-cloud
+    \item \textbf{Inconvénients} : Courbe d'apprentissage HCL
+    \item \textbf{Utilisation} : Provisionnement d'infrastructure
+\end{itemize}
+
+\subsection{Kubernetes}
+
+\begin{itemize}
+    \item \textbf{Avantages} : Orchestration puissante, scalabilité
+    \item \textbf{Inconvénients} : Complexité élevée
+    \item \textbf{Utilisation} : Orchestration conteneurs
+\end{itemize}
+
+\newpage
+
+% ============================================
+% CHAPITRE 5: CONCEPTION ET RÉALISATION
+% ============================================
+\chapter{Conception et Réalisation}
+
+\section{Introduction}
+
+Ce chapitre détaille la conception et l'implémentation de notre solution DevOps complète pour l'application de gestion de stock.
+
+\section{2. Objectifs du projet}
+
+\subsection{Objectifs fonctionnels}
+
+\begin{enumerate}
+    \item Développer une application web complète de gestion de stock
+    \item Implémenter une API RESTful
+    \item Créer une interface utilisateur moderne
+    \item Gérer une base de données relationnelle
+\end{enumerate}
+
+\subsection{Objectifs DevOps}
+
+\begin{enumerate}
+    \item Automatiser la pipeline CI/CD
+    \item Containeriser toutes les applications
+    \item Implémenter le monitoring en temps réel
+    \item Scanner les vulnérabilités de sécurité
+    \item Analyser la qualité du code
+    \item Orchestrer les déploiements
+\end{enumerate}
+
+\section{3. Utilisation de la plateforme}
+
+\subsection{Architecture globale}
+
+\begin{verbatim}
+GitHub
+  |
+  v
+Jenkins (CI/CD)
+  |
+  +---> SonarQube (Analyse)
+  +---> Trivy (Sécurité)
+  v
+Docker Registry
+  |
+  v
+Docker Compose (Prod)
+  |
+  +---> Backend (Node.js)
+  +---> Frontend (React)
+  +---> PostgreSQL
+  +---> Prometheus
+  +---> Grafana
+\end{verbatim}
+
+\subsection{Stack technologique}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Composant} & \textbf{Technologie} \\
+\hline
+Frontend & React 18.2 + TypeScript + Vite \\
+Backend & Node.js 20 + Express + TypeScript \\
+BD & PostgreSQL 14+ \\
+ORM & Prisma 5 \\
+Conteneurs & Docker + Docker Compose \\
+CI/CD & Jenkins \\
+Monitoring & Prometheus + Grafana \\
+Analyse statique & SonarQube \\
+Scan sécurité & Trivy \\
+Styling & Tailwind CSS \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Création d'une pipeline CI/CD à l'aide de Jenkins et de Docker}
+
+\subsection{Architecture Jenkins}
+
+\begin{verbatim}
+Jenkinsfile
+  |
+  +---> Clone Repository
+  +---> SonarQube Analysis
+  +---> Build Applications
+  +---> Docker Build
+  +---> Security Scan (Trivy)
+  +---> Push Registry
+  +---> Deploy Production
+  +---> Health Check
+\end{verbatim}
+
+\subsection{Stages détaillés}
+
+\subsubsection{Stage 1 : Clone Repository}
+
+Récupère le dernier code depuis GitHub.
+
+\subsubsection{Stage 2 : SonarQube Analysis}
+
+Analyse la qualité du code backend et frontend.
+
+\subsubsection{Stage 3 : Build Applications}
+
+Compile les applications et génère les artifacts.
+
+\subsubsection{Stage 4 : Docker Build}
+
+Crée les images Docker pour backend et frontend.
+
+\subsubsection{Stage 5 : Security Scan - Trivy}
+
+Détecte les vulnérabilités dans les images Docker.
+
+\subsubsection{Stage 6 : Push to Registry}
+
+Pousse les images validées vers Docker Hub.
+
+\subsubsection{Stage 7 : Deploy to Production}
+
+Récupère les images et redémarre les services.
+
+\subsubsection{Stage 8 : Health Check}
+
+Vérifie la disponibilité de tous les services.
+
+\section{Configuration Docker Compose}
+
+\begin{lstlisting}
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://user:pass@db:5432/db
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
+\end{lstlisting}
+
+\section{Monitoring avec Prometheus et Grafana}
+
+\subsection{Configuration Prometheus}
+
+\begin{lstlisting}
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'backend'
+    static_configs:
+      - targets: ['backend:3001']
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+\end{lstlisting}
+
+\subsection{Dashboards Grafana}
+
+Métriques affichées en temps réel :
+
+\begin{itemize}
+    \item Requêtes par seconde (RPS)
+    \item Temps de réponse (latence P50, P95, P99)
+    \item Utilisation CPU et mémoire
+    \item Taux d'erreur HTTP
+    \item Connections base de données
+    \item Disponibilité des services
+\end{itemize}
+
+\section{Mettre en place l'outil Ansible}
+
+\subsection{Introduction à Ansible}
+
+Ansible est un outil d'automatisation qui permet de gérer plusieurs serveurs sans installer d'agent.
+
+\subsection{Playbooks Ansible}
+
+\begin{lstlisting}
+---
+- hosts: all
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+
+    - name: Deploy application
+      shell: docker-compose up -d
+\end{lstlisting}
+
+\section{Installation et configuration}
+
+\subsection{Prérequis}
+
+\begin{itemize}
+    \item Docker Desktop installé
+    \item Git configuré
+    \item Node.js 20+ installé
+    \item PostgreSQL 14+ disponible
+\end{itemize}
+
+\subsection{Étapes de déploiement}
+
+\begin{enumerate}
+    \item Cloner le repository
+    \item Configurer les variables d'environnement
+    \item Builder les images Docker
+    \item Lancer Docker Compose
+    \item Accéder aux applications
+\end{enumerate}
+
+\subsection{URLs d'accès}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Service} & \textbf{URL} \\
+\hline
+Frontend & http://localhost:5173 \\
+Backend API & http://localhost:3001 \\
+Prometheus & http://localhost:9090 \\
+Grafana & http://localhost:3000 \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Conclusion}
+
+La mise en œuvre de cette architecture DevOps complète démontre comment intégrer les meilleures pratiques modernes pour créer une pipeline automatisée, sécurisée et performante.
+
+\newpage
+
+% ============================================
+% CONCLUSION GÉNÉRALE
+% ============================================
+\chapter*{Conclusion générale}
+\addcontentsline{toc}{chapter}{Conclusion générale}
+
+\section*{Réalisations principales}
+
+Ce stage a permis de mener à bien le développement complet d'une application de gestion de stock moderne avec une infrastructure DevOps professionnelle :
+
+\begin{itemize}
+    \item Pipeline CI/CD complètement automatisée avec Jenkins
+    \item Containerisation Docker de tous les services
+    \item Scan de sécurité automatisé (Trivy)
+    \item Analyse statique du code (SonarQube)
+    \item Infrastructure de monitoring temps réel (Prometheus + Grafana)
+    \item Alertes automatiques pour anomalies
+    \item Infrastructure entièrement reproduible
+\end{itemize}
+
+\section*{Compétences DevOps développées}
+
+\begin{itemize}
+    \item Orchestration Jenkins et pipeline CI/CD
+    \item Containerisation Docker et Docker Compose
+    \item Sécurité : Scan Trivy et hardening images
+    \item Qualité : SonarQube et métriques
+    \item Monitoring : Prometheus et Grafana
+    \item Infrastructure as Code
+    \item Best practices DevOps
+\end{itemize}
+
+\section*{Perspectives futures}
+
+L'infrastructure peut être améliorée avec :
+
+\begin{enumerate}
+    \item Déploiement Kubernetes
+    \item GitOps avec ArgoCD
+    \item Infrastructure as Code (Terraform)
+    \item Stack de logging ELK
+    \item Tests de performance
+    \item Blue-Green Deployment
+\end{enumerate}
+
+\section*{Apprentissages clés}
+
+\begin{itemize}
+    \item L'automatisation économise du temps et réduit les erreurs
+    \item La sécurité doit être intégrée dès le départ
+    \item Le monitoring continu est crucial pour la stabilité
+    \item La traçabilité des déploiements est essentielle
+    \item La documentation est vitale pour la continuité
+\end{itemize}
+
+\end{document}
