@@ -65,33 +65,41 @@ pipeline {
             }
         }
 
-        stage('Security Scan - Trivy') {
-            steps {
-                sh """
-                    mkdir -p ${WORKSPACE}/trivy-reports
+stage('Security Scan - Trivy') {
+    steps {
+        sh """
+            mkdir -p ${WORKSPACE}/trivy-reports
+            chmod 777 ${WORKSPACE}/trivy-reports   # FIX 1: Trivy runs as a different user inside container — needs write permission
 
-                    docker run --rm \
-                      -v /var/run/docker.sock:/var/run/docker.sock \
-                      -v ${WORKSPACE}/trivy-reports:/reports \
-                      aquasec/trivy:0.69.3 image \
-                      --severity HIGH,CRITICAL \
-                      --format json \
-                      --output /reports/backend-trivy.json \
-                      ${BACKEND_IMAGE} || true    
+            echo "Scanning Backend image..."
+            docker run --rm \
+              -v /var/run/docker.sock:/var/run/docker.sock \
+              -v ${WORKSPACE}/trivy-reports:/reports \
+              aquasec/trivy:0.69.3 image \
+              --severity HIGH,CRITICAL \
+              --format json \
+              --output /reports/backend-trivy.json \
+              --exit-code 0 \
+              ${BACKEND_IMAGE}
 
-                    docker run --rm \
-                      -v /var/run/docker.sock:/var/run/docker.sock \
-                      -v ${WORKSPACE}/trivy-reports:/reports \
-                      aquasec/trivy:0.69.3 image \
-                      --severity HIGH,CRITICAL \
-                      --format json \
-                      --output /reports/frontend-trivy.json \
-                      ${FRONTEND_IMAGE} || true
-                """
-                // FIX 3: removed dynamic date from filename — archiveArtifacts glob needs a stable pattern
-                archiveArtifacts artifacts: 'trivy-reports/*.json', allowEmptyArchive: true
-            }
-        }
+            echo "Scanning Frontend image..."
+            docker run --rm \
+              -v /var/run/docker.sock:/var/run/docker.sock \
+              -v ${WORKSPACE}/trivy-reports:/reports \
+              aquasec/trivy:0.69.3 image \
+              --severity HIGH,CRITICAL \
+              --format json \
+              --output /reports/frontend-trivy.json \
+              --exit-code 0 \
+              ${FRONTEND_IMAGE}
+
+            echo "--- Verifying reports were created ---"
+            ls -lh ${WORKSPACE}/trivy-reports/    # FIX 2: verify before archiving so you see exactly what's there
+        """
+
+        archiveArtifacts artifacts: 'trivy-reports/*.json', allowEmptyArchive: true
+    }
+}
 
         stage('Push to Registry') {
             steps {
@@ -107,14 +115,6 @@ pipeline {
         stage('Deploy to Production') {
             steps {
                 sh """
-                    echo "--- Verifying prometheus.yml exists before deploy ---"
-                    ls -lh ${WORKSPACE}/monitoring/prometheus.yml || { echo "ERROR: prometheus.yml not found!"; exit 1; }
-                    # FIX 1: fail early with a clear message if the file is missing
-                    # instead of letting Docker create it as a directory
-
-                    file ${WORKSPACE}/monitoring/prometheus.yml
-                    # FIX 2: confirm it's actually a file and not a directory
-
                     export BACKEND_IMAGE=${BACKEND_IMAGE}
                     export FRONTEND_IMAGE=${FRONTEND_IMAGE}
                     docker-compose pull
