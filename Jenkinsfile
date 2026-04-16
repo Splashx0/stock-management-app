@@ -69,7 +69,7 @@ pipeline {
                 script {
                     dir('backend') {
                          sh '''
-                            npm install && npm run build
+                            npm install
                             npx prisma generate
                             ''' 
                     }
