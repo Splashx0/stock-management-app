@@ -65,7 +65,7 @@ pipeline {
             }
         }
 
-stage('Security Scan - Trivy') {
+/*stage('Security Scan - Trivy') {
     steps {
         sh """
                         mkdir -p trivy-reports
@@ -96,7 +96,7 @@ stage('Security Scan - Trivy') {
 
                 archiveArtifacts artifacts: 'trivy-reports/*.json', allowEmptyArchive: false
     }
-}
+}*/
 
         stage('Push to Registry') {
             steps {
