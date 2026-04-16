@@ -153,7 +153,7 @@ pipeline {
                     sh '''
                         docker pull ${BACKEND_IMAGE}
                         docker pull ${FRONTEND_IMAGE}
-                        docker compose up -d
+                        docker compose up
                     '''
                 }
             }
