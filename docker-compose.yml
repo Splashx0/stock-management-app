@@ -33,7 +33,7 @@ services:
     image: ${FRONTEND_IMAGE}
     container_name: stock_frontend
     ports:
-      - "80:80" # FIX 3: production images serve on 80 (nginx), not 5173
+      - "5173:5173"
     environment:
       VITE_API_URL: http://localhost:3001 # NOTE: this must be set at build time for Vite — see note below
     depends_on:
@@ -47,7 +47,10 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - /var/jenkins_home/workspace/stock-management-cicd/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro # FIX 4: use absolute Jenkins path, add :ro
+      - type: bind # FIX 3: explicit bind mount type
+        source: ${WORKSPACE}/monitoring/prometheus.yml # FIX 4: use WORKSPACE env var — resolved at deploy time
+        target: /etc/prometheus/prometheus.yml
+        read_only: true
       - prometheus_data:/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"

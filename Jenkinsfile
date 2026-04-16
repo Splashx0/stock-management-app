@@ -60,9 +60,7 @@ pipeline {
             steps {
                 sh """
                     docker build -t ${BACKEND_IMAGE} ./backend
-                    docker build \
-                      --build-arg VITE_API_URL=http://localhost:3001 \
-                      -t ${FRONTEND_IMAGE} ./frontend
+                    docker build -t ${FRONTEND_IMAGE} ./frontend
                 """
             }
         }
@@ -109,14 +107,19 @@ pipeline {
         stage('Deploy to Production') {
             steps {
                 sh """
+                    echo "--- Verifying prometheus.yml exists before deploy ---"
+                    ls -lh ${WORKSPACE}/monitoring/prometheus.yml || { echo "ERROR: prometheus.yml not found!"; exit 1; }
+                    # FIX 1: fail early with a clear message if the file is missing
+                    # instead of letting Docker create it as a directory
+
+                    file ${WORKSPACE}/monitoring/prometheus.yml
+                    # FIX 2: confirm it's actually a file and not a directory
+
                     export BACKEND_IMAGE=${BACKEND_IMAGE}
                     export FRONTEND_IMAGE=${FRONTEND_IMAGE}
                     docker-compose pull
                     docker-compose up -d --remove-orphans
                 """
-                // FIX 5: added -d (detached) so Jenkins doesn't hang; --remove-orphans cleans stale containers
-                // FIX 6: export env vars explicitly so docker-compose can resolve ${BACKEND_IMAGE} / ${FRONTEND_IMAGE}
-                // FIX 7: replaced redundant docker pull calls with docker-compose pull
             }
         }
 
