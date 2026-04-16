@@ -136,10 +136,14 @@ pipeline {
         stage('Push to Registry') {
             steps {
                 script {
-                    sh '''
-                        docker push ${BACKEND_IMAGE}
-                        docker push ${FRONTEND_IMAGE}
-                    '''
+                    withDockerRegistry([credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/']) {
+                        sh '''
+                            echo "Logging in to Docker Hub..."
+                            docker push ${BACKEND_IMAGE}
+                            docker push ${FRONTEND_IMAGE}
+                            echo "Images pushed successfully to Docker Hub"
+                        '''
+                    }
                 }
             }
         }
