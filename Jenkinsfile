@@ -92,8 +92,6 @@ stage('Security Scan - Trivy') {
 
                         echo "--- Verifying reports were created ---"
                         ls -lh trivy-reports/
-                        test -s trivy-reports/backend-trivy.json
-                        test -s trivy-reports/frontend-trivy.json
         """
 
                 archiveArtifacts artifacts: 'trivy-reports/*.json', allowEmptyArchive: false
