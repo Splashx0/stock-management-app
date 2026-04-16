@@ -99,15 +99,17 @@ pipeline {
             }
         }
 
-      /*  stage('Security Scan - Trivy') {
+        stage('Security Scan - Trivy') {
             steps {
                 script {
                     sh '''
+                        echo "Scanning Backend image for vulnerabilities..."
                         trivy image --severity HIGH,CRITICAL \
                           --format json \
                           --output backend-trivy-report.json \
                           ${BACKEND_IMAGE}
 
+                        echo "Scanning Frontend image for vulnerabilities..."
                         trivy image --severity HIGH,CRITICAL \
                           --format json \
                           --output frontend-trivy-report.json \
@@ -116,7 +118,7 @@ pipeline {
                 }
                 archiveArtifacts artifacts: '*-trivy-report.json'
             }
-        }*/
+        }
 
         stage('Push to Registry') {
             steps {
