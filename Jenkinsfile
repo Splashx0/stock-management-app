@@ -68,36 +68,35 @@ pipeline {
 stage('Security Scan - Trivy') {
     steps {
         sh """
-            mkdir -p ${WORKSPACE}/trivy-reports
-            chmod 777 ${WORKSPACE}/trivy-reports   # FIX 1: Trivy runs as a different user inside container — needs write permission
+                        mkdir -p trivy-reports
 
-            echo "Scanning Backend image..."
-            docker run --rm \
-              -v /var/run/docker.sock:/var/run/docker.sock \
-              -v ${WORKSPACE}/trivy-reports:/reports \
-              aquasec/trivy:0.69.3 image \
-              --severity HIGH,CRITICAL \
-              --format json \
-              --output /reports/backend-trivy.json \
-              --exit-code 0 \
-              ${BACKEND_IMAGE}
+                        echo "Scanning Backend image..."
+                        docker run --rm \
+                            -v /var/run/docker.sock:/var/run/docker.sock \
+                            aquasec/trivy:0.69.3 image \
+                            --severity HIGH,CRITICAL \
+                            --format json \
+                            --output - \
+                            --exit-code 0 \
+                            ${BACKEND_IMAGE} > trivy-reports/backend-trivy.json
 
-            echo "Scanning Frontend image..."
-            docker run --rm \
-              -v /var/run/docker.sock:/var/run/docker.sock \
-              -v ${WORKSPACE}/trivy-reports:/reports \
-              aquasec/trivy:0.69.3 image \
-              --severity HIGH,CRITICAL \
-              --format json \
-              --output /reports/frontend-trivy.json \
-              --exit-code 0 \
-              ${FRONTEND_IMAGE}
+                        echo "Scanning Frontend image..."
+                        docker run --rm \
+                            -v /var/run/docker.sock:/var/run/docker.sock \
+                            aquasec/trivy:0.69.3 image \
+                            --severity HIGH,CRITICAL \
+                            --format json \
+                            --output - \
+                            --exit-code 0 \
+                            ${FRONTEND_IMAGE} > trivy-reports/frontend-trivy.json
 
-            echo "--- Verifying reports were created ---"
-            ls -lh ${WORKSPACE}/trivy-reports/    # FIX 2: verify before archiving so you see exactly what's there
+                        echo "--- Verifying reports were created ---"
+                        ls -lh trivy-reports/
+                        test -s trivy-reports/backend-trivy.json
+                        test -s trivy-reports/frontend-trivy.json
         """
 
-        archiveArtifacts artifacts: 'trivy-reports/*.json', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'trivy-reports/*.json', allowEmptyArchive: false
     }
 }
 
@@ -115,9 +114,6 @@ stage('Security Scan - Trivy') {
         stage('Deploy to Production') {
             steps {
                 sh """
-                    export BACKEND_IMAGE=${BACKEND_IMAGE}
-                    export FRONTEND_IMAGE=${FRONTEND_IMAGE}
-                    docker-compose pull
                     docker-compose up -d --remove-orphans
                 """
             }
