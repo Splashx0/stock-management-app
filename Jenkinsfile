@@ -10,193 +10,154 @@ pipeline {
     }
 
     environment {
-        // Load secrets from Jenkins credentials (Docker Hub)
         DOCKERHUB_USERNAME = credentials('dockerhub-username')
         DOCKERHUB_PASSWORD = credentials('dockerhub-password')
-        SONARQUBE_URL = credentials('sonarqube-url')
-        SONARQUBE_TOKEN = credentials('sonarqube-token')
-        DATABASE_URL="postgresql://splash:splash@host.docker.internal:5432/stock_db"
-        
-        // Computed variables
-        BACKEND_IMAGE = "${DOCKERHUB_USERNAME}/stock-backend:${BUILD_NUMBER}"
+        SONARQUBE_URL      = credentials('sonarqube-url')
+        SONARQUBE_TOKEN    = credentials('sonarqube-token')
+        DATABASE_URL       = "postgresql://splash:splash@host.docker.internal:5432/stock_db" 
+
+        BACKEND_IMAGE  = "${DOCKERHUB_USERNAME}/stock-backend:${BUILD_NUMBER}"
         FRONTEND_IMAGE = "${DOCKERHUB_USERNAME}/stock-frontend:${BUILD_NUMBER}"
-        GIT_COMMIT_SHORT = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
     }
 
     stages {
         stage('Clone Repository') {
             steps {
                 checkout scm
-                script {
-                    sh 'echo "Repository cloned successfully"'
-                }
+                sh 'echo "Repository cloned successfully"'
             }
         }
 
         stage('SonarQube Analysis - Backend') {
             steps {
-                script {
-                    dir('backend') {
-                        sh '''
-                            sonar-scanner \
-                              -Dsonar.projectKey=stock-management-backend \
-                              -Dsonar.host.url=${SONARQUBE_URL} \
-                              -Dsonar.login=${SONARQUBE_TOKEN} \
-                              -Dsonar.sources=src
-                        '''
-                    }
+                dir('backend') {
+                    sh """
+                        sonar-scanner \
+                          -Dsonar.projectKey=stock-management-backend \
+                          -Dsonar.host.url=${SONARQUBE_URL} \
+                          -Dsonar.login=${SONARQUBE_TOKEN} \
+                          -Dsonar.sources=src
+                    """
                 }
             }
         }
 
         stage('SonarQube Analysis - Frontend') {
             steps {
-                script {
-                    dir('frontend') {
-                        sh '''
-                            sonar-scanner \
-                              -Dsonar.projectKey=stock-management-frontend \
-                              -Dsonar.host.url=${SONARQUBE_URL} \
-                              -Dsonar.login=${SONARQUBE_TOKEN} \
-                              -Dsonar.sources=src
-                        '''
-                    }
+                dir('frontend') {
+                    sh """
+                        sonar-scanner \
+                          -Dsonar.projectKey=stock-management-frontend \
+                          -Dsonar.host.url=${SONARQUBE_URL} \
+                          -Dsonar.login=${SONARQUBE_TOKEN} \
+                          -Dsonar.sources=src
+                    """
                 }
             }
         }
-
-        /*stage('Build Backend') {
-            steps {
-                script {
-                    dir('backend') {
-                         sh '''
-                            npm install
-                            npx prisma generate
-                            ''' 
-                    }
-                }
-            }
-        }
-
-        stage('Build Frontend') {
-            steps {
-                script {
-                    dir('frontend') {
-                        sh 'npm install && npm run build'
-                    }
-                }
-            }
-        }*/
 
         stage('Build Docker Images') {
             steps {
-                script {
-                    sh '''
-                        docker build -t ${BACKEND_IMAGE} ./backend
-                        docker build -t ${FRONTEND_IMAGE} ./frontend
-                    '''
-                }
+                sh """
+                    docker build -t ${BACKEND_IMAGE} ./backend
+                    docker build \
+                      --build-arg VITE_API_URL=http://localhost:3001 \
+                      -t ${FRONTEND_IMAGE} ./frontend
+                """
             }
         }
 
-       /* stage('Security Scan - Trivy') {
+        stage('Security Scan - Trivy') {
             steps {
-                script {
-                    sh '''
-                        mkdir -p ${WORKSPACE}/trivy-reports
-                        
-                        echo "Scanning Backend image for vulnerabilities..."
-                        docker run --rm \
-                          -v /var/run/docker.sock:/var/run/docker.sock \
-                          -v ${WORKSPACE}/trivy-reports:/reports \
-                          aquasec/trivy:0.69.3 image \
-                          --severity HIGH,CRITICAL \
-                          --format json \
-                          --output /reports/backend-trivy-$(date +%Y%m%d-%H%M%S).json \
-                          ${BACKEND_IMAGE} || echo "Backend scan completed or failed gracefully"
+                sh """
+                    mkdir -p ${WORKSPACE}/trivy-reports
 
-                        echo "Scanning Frontend image for vulnerabilities..."
-                        docker run --rm \
-                          -v /var/run/docker.sock:/var/run/docker.sock \
-                          -v ${WORKSPACE}/trivy-reports:/reports \
-                          aquasec/trivy:0.69.3 image \
-                          --severity HIGH,CRITICAL \
-                          --format json \
-                          --output /reports/frontend-trivy-$(date +%Y%m%d-%H%M%S).json \
-                          ${FRONTEND_IMAGE} || echo "Frontend scan completed or failed gracefully"
-                        
-                        echo "Trivy scan reports saved to ${WORKSPACE}/trivy-reports/"
-                        ls -lh ${WORKSPACE}/trivy-reports/ || echo "No report files found"
-                    '''
-                }
+                    docker run --rm \
+                      -v /var/run/docker.sock:/var/run/docker.sock \
+                      -v ${WORKSPACE}/trivy-reports:/reports \
+                      aquasec/trivy:0.69.3 image \
+                      --severity HIGH,CRITICAL \
+                      --format json \
+                      --output /reports/backend-trivy.json \
+                      ${BACKEND_IMAGE} || true    
+
+                    docker run --rm \
+                      -v /var/run/docker.sock:/var/run/docker.sock \
+                      -v ${WORKSPACE}/trivy-reports:/reports \
+                      aquasec/trivy:0.69.3 image \
+                      --severity HIGH,CRITICAL \
+                      --format json \
+                      --output /reports/frontend-trivy.json \
+                      ${FRONTEND_IMAGE} || true
+                """
+                // FIX 3: removed dynamic date from filename — archiveArtifacts glob needs a stable pattern
                 archiveArtifacts artifacts: 'trivy-reports/*.json', allowEmptyArchive: true
             }
-        }*/
+        }
 
         stage('Push to Registry') {
             steps {
-                script {
-                        sh '''
-                            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-                            echo "Logging in to Docker Hub..."
-                            docker push ${BACKEND_IMAGE}
-                            docker push ${FRONTEND_IMAGE}
-                            echo "Images pushed successfully to Docker Hub"
-                        '''
-                }
+                sh """
+                    echo \$DOCKERHUB_PASSWORD | docker login -u \$DOCKERHUB_USERNAME --password-stdin
+                    docker push ${BACKEND_IMAGE}
+                    docker push ${FRONTEND_IMAGE}
+                """
+                // FIX 4: use --password-stdin instead of -p flag to avoid password in shell history/logs
             }
         }
 
         stage('Deploy to Production') {
             steps {
-                script {
-                    sh '''
-                        docker pull ${BACKEND_IMAGE}
-                        docker pull ${FRONTEND_IMAGE}
-                        docker-compose up
-                    '''
-                }
+                sh """
+                    export BACKEND_IMAGE=${BACKEND_IMAGE}
+                    export FRONTEND_IMAGE=${FRONTEND_IMAGE}
+                    docker-compose pull
+                    docker-compose up -d --remove-orphans
+                """
+                // FIX 5: added -d (detached) so Jenkins doesn't hang; --remove-orphans cleans stale containers
+                // FIX 6: export env vars explicitly so docker-compose can resolve ${BACKEND_IMAGE} / ${FRONTEND_IMAGE}
+                // FIX 7: replaced redundant docker pull calls with docker-compose pull
             }
         }
 
         stage('Health Check') {
             steps {
-                script {
-                    sh '''
-                        echo "Checking backend API..."
-                        curl -f http://localhost:3001/api/health || exit 1
+                sh """
+                    echo "Waiting for services to be ready..."
+                    sleep 15                           
 
-                        echo "Checking frontend..."
-                        curl -f http://localhost:5173 || exit 1
+                    echo "Checking backend API..."
+                    curl -f http://localhost:3001/api/health || exit 1
 
-                        echo "Checking Prometheus..."
-                        curl -f http://localhost:9090 || exit 1
+                    echo "Checking frontend..."
+                    curl -f http://localhost:80 || exit 1    
 
-                        echo "Checking Grafana..."
-                        curl -f http://localhost:3000 || exit 1
-                    '''
-                }
+                    echo "Checking Prometheus..."
+                    curl -f http://localhost:9090/-/healthy || exit 1
+
+                    echo "Checking Grafana..."
+                    curl -f http://localhost:3000/api/health || exit 1
+                """
+                // FIX 8: frontend port changed from 5173 to 80 (production nginx)
+                // FIX 9: added sleep to give containers time to start before health checks
+                // FIX 10: use proper health endpoints for Prometheus and Grafana
             }
         }
     }
 
-    /*post {
+    post {
         always {
+            sh 'docker logout || true'   // FIX 11: always logout from registry
             cleanWs()
         }
         success {
-            emailext(
-                subject: "✅ Build Successful: ${BUILD_NUMBER}",
-                body: "Build ${BUILD_NUMBER} completed successfully.\n\nCommit: ${GIT_COMMIT_SHORT}",
-                to: "${ALERT_EMAIL}"
-            )
+            echo "Build ${BUILD_NUMBER} deployed successfully."
         }
         failure {
-            emailext(
-                subject: "❌ Build Failed: ${BUILD_NUMBER}",
-                body: "Build ${BUILD_NUMBER} failed.\n\nPlease check Jenkins logs.",
-                to: "${ALERT_EMAIL}"
-            )
+            sh """
+                echo "Build failed — collecting logs..."
+                docker-compose logs --tail=100 || true
+            """
         }
-    }*/
+    }
 }
