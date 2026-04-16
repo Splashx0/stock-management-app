@@ -66,7 +66,7 @@ export default function Analytics() {
                 fill="#8884d8"
                 dataKey="value"
               >
-                {categoryData.map((index) => (
+                {categoryData.map((index: any) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}

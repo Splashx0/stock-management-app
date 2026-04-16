@@ -15,7 +15,6 @@ import {
   Users,
   X,
   Truck,
-  Bell,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -93,7 +92,7 @@ export function Sidebar() {
 
     // Dispatch custom event for other components to listen to
     window.dispatchEvent(
-      new CustomEvent("sidebarChange", { detail: { expanded: newState } })
+      new CustomEvent("sidebarChange", { detail: { expanded: newState } }),
     );
 
     // Also dispatch storage event for cross-tab sync
@@ -121,7 +120,7 @@ export function Sidebar() {
         <div
           className={cn(
             "fixed inset-y-0 left-0 z-50 w-64 transform border-r bg-background transition-transform duration-200 ease-in-out",
-            isOpen ? "translate-x-0" : "-translate-x-full"
+            isOpen ? "translate-x-0" : "-translate-x-full",
           )}
         >
           <div className="flex h-16 items-center justify-between border-b px-4">
@@ -162,14 +161,14 @@ export function Sidebar() {
               {navItems.map((item) => (
                 <Link
                   key={item.href}
-                  href={item.href}
                   className={cn(
                     "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
                     pathname === item.href
                       ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
                   )}
                   onClick={() => setIsOpen(false)}
+                  to={""}
                 >
                   <item.icon className="h-5 w-5" />
                   {item.title}
@@ -177,12 +176,13 @@ export function Sidebar() {
               ))}
             </nav>
             <div className="mt-auto border-t p-4">
-              <Link to="/profile"
+              <Link
+                to="/profile"
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
                   pathname === "/profile"
                     ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
                 onClick={() => setIsOpen(false)}
               >
@@ -209,7 +209,7 @@ export function Sidebar() {
       <div
         className={cn(
           "fixed inset-y-0 left-0 z-20 border-r bg-background transition-all duration-300 ease-in-out",
-          isExpanded ? "w-64" : "w-20"
+          isExpanded ? "w-64" : "w-20",
         )}
       >
         <div className="flex h-16 items-center justify-between border-b px-4">
@@ -253,13 +253,14 @@ export function Sidebar() {
             {navItems.map((item) => (
               <Tooltip key={item.href} delayDuration={0}>
                 <TooltipTrigger asChild>
-                  <Link to={item.href}
+                  <Link
+                    to={item.href}
                     className={cn(
                       "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
                       pathname === item.href
                         ? "bg-primary text-primary-foreground"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                      !isExpanded && "justify-center px-2"
+                      !isExpanded && "justify-center px-2",
                     )}
                   >
                     <item.icon className="h-5 w-5" />
@@ -275,13 +276,14 @@ export function Sidebar() {
           <div className="mt-auto border-t p-4">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link to="/profile"
+                <Link
+                  to="/profile"
                   className={cn(
                     "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
                     pathname === "/profile"
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                    !isExpanded && "justify-center px-2"
+                    !isExpanded && "justify-center px-2",
                   )}
                 >
                   <Avatar className="h-8 w-8">

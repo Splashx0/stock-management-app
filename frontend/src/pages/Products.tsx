@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Package, Plus, Edit, FileDown, Trash, Eye } from "lucide-react";
+import { Package, Plus, Edit, FileDown, Trash } from "lucide-react";
 import { useState } from "react";
 import {
   Select,
